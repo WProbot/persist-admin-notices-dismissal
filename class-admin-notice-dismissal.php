@@ -73,7 +73,7 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 		/**
 		 * Singleton instance.
 		 *
-		 * @return bool|\PAnD
+		 * @return \Admin_Notice_Dismissal|bool
 		 */
 		public static function instance() {
 			if ( false === self::$instance ) {

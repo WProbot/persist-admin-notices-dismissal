@@ -15,7 +15,7 @@ require __DIR__ . 'class-admin-notice-dismissal.php';
 
 $PAnD = new Admin_Notice_Dismissal();
 
-function sample_admin_notice__success1( $PAnD ) {
+function and_test_admin_notice__success1( $PAnD ) {
 	if ( ! $PAnD->is_admin_notice_active( 'data-notice-one-forever' ) ) {
 		return;
 	}
@@ -27,7 +27,7 @@ function sample_admin_notice__success1( $PAnD ) {
 	<?php
 }
 
-function sample_admin_notice__success2( $PAnD ) {
+function and_test_admin_notice__success2( $PAnD ) {
 	if ( ! $PAnD->is_admin_notice_active( 'data-notice-two-2' ) ) {
 		return;
 	}
@@ -39,6 +39,6 @@ function sample_admin_notice__success2( $PAnD ) {
 	<?php
 }
 
-add_action( 'admin_notices', 'sample_admin_notice__success1' );
-add_action( 'admin_notices', 'sample_admin_notice__success2' );
+add_action( 'admin_notices', 'and_test_admin_notice__success1' );
+add_action( 'admin_notices', 'and_test_admin_notice__success2' );
 

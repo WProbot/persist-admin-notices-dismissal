@@ -12,7 +12,7 @@
  */
 
 require 'class-admin-notice-dismissal.php';
-
+add_action( 'admin_init', array( Admin_Notice_Dismissal::instance(), 'init' ) );
 
 function and_test_admin_notice__success1() {
 	$PAnD = new Admin_Notice_Dismissal();

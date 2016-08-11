@@ -126,7 +126,6 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 				$dismissible_length = strtotime( absint( $dismissible_length ) . ' days' );
 			}
 
-			check_ajax_referer( 'PAnD-dismissible-notice', 'nonce' );
 			// @TODO remove this before commit;
 			$transient = is_string( $dismissible_length) ? 60 : $dismissible_length * 60;
 

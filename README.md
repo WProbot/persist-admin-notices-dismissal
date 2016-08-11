@@ -1,21 +1,10 @@
-# Persist Admin notice Dismissals
-[![Latest Stable Version](https://poser.pugx.org/collizo4sky/persist-admin-notices-dismissal/v/stable)](https://packagist.org/packages/collizo4sky/persist-admin-notices-dismissal)
-[![Total Downloads](https://poser.pugx.org/collizo4sky/persist-admin-notices-dismissal/downloads)](https://packagist.org/packages/collizo4sky/persist-admin-notices-dismissal)
+# Admin Notice Dismissal
 
-Simple framework library that persists the dismissal of admin notices across pages in WordPress dashboard.
+Simple plugin for a feature project that persists the dismissal of admin notices across pages in WordPress dashboard.
 
 ## Installation
 
-Run `composer require collizo4sky/persist-admin-notices-dismissal`
-
-Alternatively, clone or download this repo into the `vendor/` folder in your plugin, and include/require the `persist-admin-notices-dismissal.php` file like so
-
-```
-require  __DIR__ . '/vendor/persist-admin-notices-dismissal/persist-admin-notices-dismissal.php'
-add_action( 'admin_init', array( 'PAnD', 'init' ) );
-```
-
-or let Composer's autoloader do the work.
+Activate the plugin.
 
 ## How to Use
 Firstly, install and activate this library within a plugin.
@@ -39,13 +28,16 @@ To make it hidden forever when dismissed, add the following data attribute `data
 
 ```
 function sample_admin_notice__success() {
+	if ( ! Admin_Notice_Dismissal::instance()->is_admin_notice_active( 'data-notice-notice-forever' ) ) {
+		return;
+	}
+
 	?>
 	<div data-dismissible="data-disable-done-notice-forever" class="updated notice notice-success is-dismissible">
 		<p><?php _e( 'Done!', 'sample-text-domain' ); ?></p>
 	</div>
 	<?php
 }
-add_action( 'admin_init', array( 'PAnD', 'init' ) );
 add_action( 'admin_notices', 'sample_admin_notice__success' );
 ```
 
@@ -55,7 +47,7 @@ When using the framework with an autoloader you **must** also load the class out
 Just add the following in your main plugin file.
 
 ```
-add_action( 'admin_init', array( 'PAnD', 'init' ) );
+add_action( 'admin_init', array( Admin_Notice_Dismissal::instance(), 'init' ) );
 ```
  
 **Note:** the `data-dismissible` attribute must have a unique hyphen separated text prefixed by `data-` which will serve as the key or option name used by the Options API to persist the state to the database. Don't understand, see the following examples.
@@ -72,7 +64,7 @@ To actually make the dismissed admin notice not to appear, use the `is_admin_not
 
 ```
 function sample_admin_notice__success1() {
-	if ( ! PAnD::is_admin_notice_active( 'data-notice-one-forever' ) ) {
+	if ( ! Admin_Notice_Dismissal::instance()->is_admin_notice_active( 'data-notice-one-forever' ) ) {
 		return;
 	}
 
@@ -84,7 +76,7 @@ function sample_admin_notice__success1() {
 }
 
 function sample_admin_notice__success2() {
-	if ( ! PAnD::is_admin_notice_active( 'data-notice-two-2' ) ) {
+	if ( ! Admin_Notice_Dismissal::instance()->is_admin_notice_active( 'data-notice-two-2' ) ) {
 		return;
 	}
 
@@ -95,7 +87,6 @@ function sample_admin_notice__success2() {
 	<?php
 }
 
-add_action( 'admin_init', array( 'PAnD', 'init' ) );
 add_action( 'admin_notices', 'sample_admin_notice__success1' );
 add_action( 'admin_notices', 'sample_admin_notice__success2' );
 ```

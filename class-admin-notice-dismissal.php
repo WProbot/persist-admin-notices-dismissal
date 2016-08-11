@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Persist Admin notices Dismissal
+ * Admin Notice Dismissal
  *
  * Copyright (C) 2016  Agbonghama Collins <http://w3guy.com>
  *
@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package Persist Admin notices Dismissal
+ * @package Admin Notice Dismissal
  * @author  Agbonghama Collins
  * @author  Andy Fragen
  * @license http://www.gnu.org/licenses GNU General Public License
@@ -39,28 +39,65 @@ if ( isset( $_REQUEST['action'] ) && 'heartbeat' === $_REQUEST['action'] ) {
 	return;
 }
 
-if ( ! class_exists( 'PAnD' ) ) {
+if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 
 	/**
 	 * Class PAnD
 	 */
-	class PAnD {
+	class Admin_Notice_Dismissal {
+
+		/**
+		 * Variable for random hash so transients don't collide.
+		 *
+		 * @var bool|mixed
+		 */
+		private $hash;
+
+		/**
+		 * Singleton variable.
+		 *
+		 * @var bool
+		 */
+		private static $instance = false;
+
+		/**
+		 * PAnD constructor.
+		 */
+		public function __construct() {
+			$hash = get_site_option( 'admin_notice_hash' );
+			if ( ! $hash ) {
+				$this->hash = update_site_option( 'admin_notice_hash', md5( uniqid( rand(), true ) ) );
+			}
+		}
+
+		/**
+		 * Singleton instance.
+		 *
+		 * @return bool|\PAnD
+		 */
+		public static function instance() {
+			if ( false === self::$instance ) {
+				self::$instance = new self();
+			}
+
+			return self::$instance;
+		}
 
 		/**
 		 * Init hooks.
 		 */
-		public static function init() {
-			add_action( 'admin_enqueue_scripts', array( __CLASS__, 'load_script' ) );
-			add_action( 'wp_ajax_dismiss_admin_notice', array( __CLASS__, 'dismiss_admin_notice' ) );
+		public function init() {
+			add_action( 'admin_enqueue_scripts', array( $this, 'load_script' ) );
+			add_action( 'wp_ajax_dismiss_admin_notice', array( $this, 'dismiss_admin_notice' ) );
 		}
 
 		/**
 		 * Enqueue javascript and variables.
 		 */
-		public static function load_script() {
+		public function load_script() {
 			wp_enqueue_script(
 				'dismissible-notices',
-				plugins_url( 'dismiss-notice.js', __FILE__ ),
+				plugins_url( 'js/dismiss-notice.js', __FILE__ ),
 				array( 'jquery', 'common' ),
 				false,
 				true
@@ -79,16 +116,21 @@ if ( ! class_exists( 'PAnD' ) ) {
 		 * Handles Ajax request to persist notices dismissal.
 		 * Uses check_ajax_referer to verify nonce.
 		 */
-		public static function dismiss_admin_notice() {
+		public function dismiss_admin_notice() {
 			$option_name        = sanitize_text_field( $_POST['option_name'] );
 			$dismissible_length = sanitize_text_field( $_POST['dismissible_length'] );
+			$transient          = 0;
 
 			if ( 'forever' != $dismissible_length ) {
+				$transient = $dismissible_length * DAY_IN_SECONDS;
+
+				// @TODO remove this before commit;
+				$transient          = $dismissible_length * 60;
 				$dismissible_length = strtotime( absint( $dismissible_length ) . ' days' );
 			}
 
 			check_ajax_referer( 'PAnD-dismissible-notice', 'nonce' );
-			update_option( $option_name, $dismissible_length );
+			set_site_transient( md5( $this->hash . $option_name ), $dismissible_length, $transient );
 			wp_die();
 		}
 
@@ -99,11 +141,11 @@ if ( ! class_exists( 'PAnD' ) ) {
 		 *
 		 * @return bool
 		 */
-		public static function is_admin_notice_active( $arg ) {
+		public function is_admin_notice_active( $arg ) {
 			$array       = explode( '-', $arg );
 			$length      = array_pop( $array );
 			$option_name = implode( '-', $array );
-			$db_record   = get_option( $option_name );
+			$db_record   = get_site_transient( md5( $this->hash . $option_name ) );
 
 			if ( 'forever' == $db_record ) {
 				return false;

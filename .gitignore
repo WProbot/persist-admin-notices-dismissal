@@ -1,4 +1,2 @@
-vendor/*
-/vendor/
+.DS_Store
 .idea/*
-index.php

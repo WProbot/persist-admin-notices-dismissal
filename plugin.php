@@ -13,28 +13,29 @@
 
 require 'class-admin-notice-dismissal.php';
 
-$PAnD = new Admin_Notice_Dismissal();
 
-function and_test_admin_notice__success1( $PAnD ) {
+function and_test_admin_notice__success1() {
+	$PAnD = new Admin_Notice_Dismissal();
 	if ( ! $PAnD->is_admin_notice_active( 'data-notice-one-forever' ) ) {
 		return;
 	}
 
 	?>
 	<div data-dismissible="data-notice-one-forever" class="updated notice notice-success is-dismissible">
-		<p><?php _e( 'Done 1!', 'sample-text-domain' ); ?></p>
+		<p><?php _e( 'Dismiss Forever!', 'sample-text-domain' ); ?></p>
 	</div>
 	<?php
 }
 
-function and_test_admin_notice__success2( $PAnD ) {
+function and_test_admin_notice__success2() {
+	$PAnD = new Admin_Notice_Dismissal();
 	if ( ! $PAnD->is_admin_notice_active( 'data-notice-two-2' ) ) {
 		return;
 	}
 
 	?>
 	<div data-dismissible="data-notice-two-2" class="updated notice notice-success is-dismissible">
-		<p><?php _e( 'Done 2!', 'sample-text-domain' ); ?></p>
+		<p><?php _e( 'Dismiss for a Day!', 'sample-text-domain' ); ?></p>
 	</div>
 	<?php
 }

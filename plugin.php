@@ -11,7 +11,7 @@
  * GitHub Branch: feature-project
  */
 
-require __DIR__ . 'class-admin-notice-dismissal.php';
+require 'class-admin-notice-dismissal.php';
 
 $PAnD = new Admin_Notice_Dismissal();
 

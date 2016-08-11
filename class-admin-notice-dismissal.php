@@ -88,7 +88,7 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 		 */
 		public function init() {
 			add_action( 'admin_enqueue_scripts', array( $this, 'load_script' ) );
-			add_action( 'wp_ajax_dismiss_admin_notice', array( $this, 'dismiss_admin_notice' ) );
+			add_action( 'wp_ajax_admin_notice_dismissal', array( $this, 'dismiss_admin_notice' ) );
 		}
 
 		/**
@@ -96,7 +96,7 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 		 */
 		public function load_script() {
 			wp_enqueue_script(
-				'dismissible-notices',
+				'admin-notice-dismissal',
 				plugins_url( 'js/dismiss-notice.js', __FILE__ ),
 				array( 'jquery', 'common' ),
 				false,
@@ -104,10 +104,10 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 			);
 
 			wp_localize_script(
-				'dismissible-notices',
+				'admin-notice-dismissal',
 				'dismissible_notice',
 				array(
-					'nonce' => wp_create_nonce( 'PAnD-dismissible-notice' ),
+					'nonce' => wp_create_nonce( 'dismissible-notice' ),
 				)
 			);
 		}
@@ -130,6 +130,7 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 			}
 
 			check_ajax_referer( 'PAnD-dismissible-notice', 'nonce' );
+			check_ajax_referer( 'dismissible-notice', 'nonce' );
 			set_site_transient( md5( $this->hash . $option_name ), $dismissible_length, $transient );
 			wp_die();
 		}

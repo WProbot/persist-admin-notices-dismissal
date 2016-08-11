@@ -123,13 +123,13 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 
 			if ( 'forever' != $dismissible_length ) {
 				$transient = $dismissible_length * DAY_IN_SECONDS;
-
-				// @TODO remove this before commit;
-				$transient          = $dismissible_length * 60;
 				$dismissible_length = strtotime( absint( $dismissible_length ) . ' days' );
 			}
 
 			check_ajax_referer( 'PAnD-dismissible-notice', 'nonce' );
+			// @TODO remove this before commit;
+			$transient = is_string( $dismissible_length) ? 60 : $dismissible_length * 60;
+
 			check_ajax_referer( 'dismissible-notice', 'nonce' );
 			set_site_transient( md5( $this->hash . $option_name ), $dismissible_length, $transient );
 			wp_die();

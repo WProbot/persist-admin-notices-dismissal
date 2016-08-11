@@ -95,6 +95,9 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 		 * Enqueue javascript and variables.
 		 */
 		public function load_script() {
+			// Need to dequeue if using PAnD
+			wp_dequeue_script('dismissible-notices');
+
 			wp_enqueue_script(
 				'admin-notice-dismissal',
 				plugins_url( 'js/dismiss-notice.js', __FILE__ ),

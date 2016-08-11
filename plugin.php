@@ -2,12 +2,12 @@
 
 /**
  * Plugin Name: Admin Notice Dismissal
- * Plugin URI: https://github.com/afragen/persist_admin_notices_dismissal
+ * Plugin URI: https://github.com/afragen/persist-admin-notices-dismissal
  * Description: A feature project for persistant dismissal of admin notices.
  * Version: 1.0
  * Author: Agbonghama Collins, Andy Fragen
  * License: GPL2+
- * GitHub Plugin URI: https://github.com/afragen/persist_admin_notices_dismissal
+ * GitHub Plugin URI: https://github.com/afragen/persist-admin-notices-dismissal
  * GitHub Branch: feature-project
  */
 

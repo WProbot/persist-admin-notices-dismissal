@@ -61,12 +61,14 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 		private static $instance = false;
 
 		/**
-		 * PAnD constructor.
+		 * Admin_Notice_Dismissal constructor.
 		 */
 		public function __construct() {
 			$hash = get_site_option( 'admin_notice_hash' );
 			if ( ! $hash ) {
 				$this->hash = update_site_option( 'admin_notice_hash', md5( uniqid( rand(), true ) ) );
+			} else {
+				$this->hash = $hash;
 			}
 		}
 
@@ -88,7 +90,7 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 		 */
 		public function init() {
 			add_action( 'admin_enqueue_scripts', array( $this, 'load_script' ) );
-			add_action( 'wp_ajax_admin_notice_dismissal', array( $this, 'dismiss_admin_notice' ) );
+			add_action( 'wp_ajax_dismiss_admin_notice', array( $this, 'dismiss_admin_notice' ) );
 		}
 
 		/**
@@ -96,10 +98,10 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 		 */
 		public function load_script() {
 			// Need to dequeue if using PAnD
-			wp_dequeue_script('dismissible-notices');
+			//wp_dequeue_script('dismissible-notices');
 
 			wp_enqueue_script(
-				'admin-notice-dismissal',
+				'dismiss_admin_notice',
 				plugins_url( 'js/dismiss-notice.js', __FILE__ ),
 				array( 'jquery', 'common' ),
 				false,
@@ -107,7 +109,7 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 			);
 
 			wp_localize_script(
-				'admin-notice-dismissal',
+				'dismiss_admin_notice',
 				'dismissible_notice',
 				array(
 					'nonce' => wp_create_nonce( 'dismissible-notice' ),
@@ -130,7 +132,7 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 			}
 
 			// @TODO remove this before commit;
-			$transient = is_string( $dismissible_length) ? 60 : $dismissible_length * 60;
+			$transient = 60;
 
 			check_ajax_referer( 'dismissible-notice', 'nonce' );
 			set_site_transient( md5( $this->hash . $option_name ), $dismissible_length, $transient );

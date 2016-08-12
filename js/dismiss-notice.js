@@ -15,7 +15,7 @@
             option_name = attr_value.join('-');
 
             data = {
-                'action': 'admin_notice_dismissal',
+                'action': 'dismiss_admin_notice',
                 'option_name': option_name,
                 'dismissible_length': dismissible_length,
                 'nonce': dismissible_notice.nonce

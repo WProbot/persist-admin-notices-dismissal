@@ -47,13 +47,6 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 	class Admin_Notice_Dismissal {
 
 		/**
-		 * Variable for random hash so transients don't collide.
-		 *
-		 * @var bool|mixed
-		 */
-		private $hash;
-
-		/**
 		 * Singleton variable.
 		 *
 		 * @var bool
@@ -64,12 +57,6 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 		 * Admin_Notice_Dismissal constructor.
 		 */
 		public function __construct() {
-			$hash = get_site_option( 'admin_notice_hash' );
-			if ( ! $hash ) {
-				$this->hash = update_site_option( 'admin_notice_hash', md5( uniqid( rand(), true ) ) );
-			} else {
-				$this->hash = $hash;
-			}
 		}
 
 		/**
@@ -135,7 +122,7 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 			$transient = 60;
 
 			check_ajax_referer( 'dismissible-notice', 'nonce' );
-			set_site_transient( md5( $this->hash . $option_name ), $dismissible_length, $transient );
+			set_site_transient(  $option_name , $dismissible_length, $transient );
 			wp_die();
 		}
 
@@ -150,7 +137,7 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 			$array       = explode( '-', $arg );
 			$length      = array_pop( $array );
 			$option_name = implode( '-', $array );
-			$db_record   = get_site_transient( md5( $this->hash . $option_name ) );
+			$db_record   = get_site_transient(  $option_name );
 
 			if ( 'forever' == $db_record ) {
 				return false;

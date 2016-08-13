@@ -114,7 +114,8 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 			$transient          = 0;
 
 			if ( 'forever' != $dismissible_length ) {
-				$transient = $dismissible_length * DAY_IN_SECONDS;
+				$dismissible_length = ( 0 == absint( $dismissible_length ) ) ? 1 : $dismissible_length;
+				$transient          = absint( $dismissible_length ) * DAY_IN_SECONDS;
 				$dismissible_length = strtotime( absint( $dismissible_length ) . ' days' );
 			}
 

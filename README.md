@@ -9,8 +9,7 @@ Activate the plugin.
 ## How to Use
 Say you have the following markup as your admin notice,
 
-
-```
+```php
 function sample_admin_notice__success() {
 	?>
 	<div class="updated notice notice-success is-dismissible">
@@ -24,7 +23,7 @@ add_action( 'admin_notices', 'sample_admin_notice__success' );
 To make it hidden forever when dismissed, add the following data attribute `data-dismissible="disable-done-notice-forever"` to the div markup like so:
 
 
-```
+```php
 function sample_admin_notice__success() {
 	if ( ! Admin_Notice_Dismissal::instance()->is_admin_notice_active( 'disable-done-notice-forever' ) ) {
 		return;
@@ -51,7 +50,7 @@ You **must** append the dismissal time period to the end of your unique identifi
 To actually make the dismissed admin notice not to appear, use the `is_admin_notice_active()` function like so:
 
 
-```
+```php
 function sample_admin_notice__success1() {
 	if ( ! Admin_Notice_Dismissal::instance()->is_admin_notice_active( 'notice-one-forever' ) ) {
 		return;

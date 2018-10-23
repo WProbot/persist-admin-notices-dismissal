@@ -22,21 +22,14 @@
  * @author  Agbonghama Collins
  * @author  Andy Fragen
  * @license http://www.gnu.org/licenses GNU General Public License
- * @version 1.1.0
+ * @version 2.0.0
  */
 
 /**
  * Exit if called directly.
  */
-if ( ! defined( 'WPINC' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
 	die;
-}
-
-/**
- * Don't run during heartbeat.
- */
-if ( isset( $_REQUEST['action'] ) && 'heartbeat' === $_REQUEST['action'] ) {
-	return;
 }
 
 if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
@@ -87,6 +80,10 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 			// Need to dequeue if using PAnD
 			//wp_dequeue_script('dismissible-notices');
 
+			if ( is_customize_preview() ) {
+				return;
+			}
+
 			wp_enqueue_script(
 				'dismiss_admin_notice',
 				plugins_url( 'js/dismiss-notice.js', __FILE__ ),
@@ -111,19 +108,14 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 		public function dismiss_admin_notice() {
 			$option_name        = sanitize_text_field( $_POST['option_name'] );
 			$dismissible_length = sanitize_text_field( $_POST['dismissible_length'] );
-			$transient          = 0;
 
 			if ( 'forever' != $dismissible_length ) {
 				$dismissible_length = ( 0 == absint( $dismissible_length ) ) ? 1 : $dismissible_length;
-				$transient          = absint( $dismissible_length ) * DAY_IN_SECONDS;
 				$dismissible_length = strtotime( absint( $dismissible_length ) . ' days' );
 			}
 
-			// @TODO remove this before commit;
-			$transient = 60;
-
 			check_ajax_referer( 'dismissible-notice', 'nonce' );
-			set_site_transient(  $option_name , $dismissible_length, $transient );
+			$this->set_admin_notice_cache( $option_name, $dismissible_length );
 			wp_die();
 		}
 
@@ -138,7 +130,7 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 			$array       = explode( '-', $arg );
 			$length      = array_pop( $array );
 			$option_name = implode( '-', $array );
-			$db_record   = get_site_transient(  $option_name );
+			$db_record   = $this->get_admin_notice_cache( $option_name );
 
 			if ( 'forever' == $db_record ) {
 				return false;
@@ -147,6 +139,46 @@ if ( ! class_exists( 'Admin_Notice_Dismissal' ) ) {
 			} else {
 				return true;
 			}
+		}
+
+		/**
+		 * Returns admin notice cached timeout.
+		 *
+		 * @access public
+		 *
+		 * @param string|bool $id admin notice name or false.
+		 *
+		 * @return array|bool The timeout. False if expired.
+		 */
+		public function get_admin_notice_cache( $id = false ) {
+			if ( ! $id ) {
+				return false;
+			}
+			$cache_key = 'pand-' . md5( $id );
+			$timeout   = get_site_option( $cache_key );
+
+			if ( empty( $timeout ) || time() > $timeout ) {
+				return false;
+			}
+
+			return $timeout;
+		}
+
+		/**
+		 * Sets admin notice timeout in site option.
+		 *
+		 * @access public
+		 *
+		 * @param string      $id       Data Identifier.
+		 * @param string|bool $timeout  Timeout for admin notice.
+		 *
+		 * @return bool
+		 */
+		public function set_admin_notice_cache( $id, $timeout ) {
+			$cache_key = 'pand-' . md5( $id );
+			update_site_option( $cache_key, $timeout );
+
+			return true;
 		}
 
 	}

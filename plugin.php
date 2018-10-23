@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Plugin Name: Admin Notice Dismissal
  * Plugin URI: https://github.com/afragen/persist-admin-notices-dismissal
@@ -11,7 +10,7 @@
  * GitHub Branch: feature-project
  */
 
-require 'class-admin-notice-dismissal.php';
+require_once 'class-admin-notice-dismissal.php';
 add_action( 'admin_init', array( Admin_Notice_Dismissal::instance(), 'init' ) );
 
 function and_test_admin_notice__success1() {
@@ -42,4 +41,3 @@ function and_test_admin_notice__success2() {
 
 add_action( 'admin_notices', 'and_test_admin_notice__success1' );
 add_action( 'admin_notices', 'and_test_admin_notice__success2' );
-

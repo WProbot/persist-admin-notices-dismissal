@@ -28,7 +28,7 @@ function sample_admin_notice__success() {
 	if ( ! Admin_Notice_Dismissal::instance()->is_admin_notice_active( 'disable-done-notice-forever' ) ) {
 		return;
 	}
-	
+
 	?>
 	<div data-dismissible="disable-done-notice-forever" class="updated notice notice-success is-dismissible">
 		<p><?php _e( 'Done!', 'sample-text-domain' ); ?></p>
@@ -79,5 +79,14 @@ add_action( 'admin_notices', 'sample_admin_notice__success1' );
 add_action( 'admin_notices', 'sample_admin_notice__success2' );
 ```
 
+You should be a good developer and add the following to your `uninstall.php` file so that we can clean up after ourselves and not leave unnecessary stuff in the options table.
+
+ ```php
+ global $wpdb;
+ $table         = is_multisite() ? $wpdb->base_prefix . 'sitemeta' : $wpdb->base_prefix . 'options';
+ $column        = is_multisite() ? 'meta_key' : 'option_name';
+ $delete_string = 'DELETE FROM ' . $table . ' WHERE ' . $column . ' LIKE %s LIMIT 1000';
+ $wpdb->query( $wpdb->prepare( $delete_string, array( '%pand-%' ) ) );
+ ```
 
 Cool beans. Isn't it?
